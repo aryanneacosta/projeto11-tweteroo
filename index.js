@@ -6,7 +6,6 @@ app.use(cors());
 app.use(express.json());
 
 const users = [];
-const tweet = [];
 const tweets = [];
 
 app.post('/sign-up', (req, res) => {
@@ -16,22 +15,19 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/tweets', (req, res) => {
     const thistweet = req.body;
-    tweet.push(thistweet);
-    const userAvatar = users.find((users) => users.username === thistweet.username);
-    tweets.push({
-        username: thistweet.username,
-        avatar: userAvatar.avatar,
-        tweet: thistweet.tweet
-    });
+    const { username, tweet } = thistweet
+    const avatar = users.find(user => user.username === username);
+    const newTweet = {
+        username: username,
+        avatar: avatar.avatar,
+        tweet: tweet
+    }
+    tweets.push(newTweet);
     res.send('OK');
 })
 
 app.get('/tweets', (req, res) => {
-    const tweetsOrdered = [];
-    for (let i = 0; i < tweets.length; i++) {
-        tweetsOrdered.push(tweets[tweets.length - i]);
-    }
-    const lastTweets = tweetsOrdered.splice(0, 10);
+    const lastTweets = ([...tweets].reverse().splice(0, 10));
     res.send(lastTweets);
 })
 
